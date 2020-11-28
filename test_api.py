@@ -22,10 +22,18 @@ class CastingTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
 
+        # SQLite3 Config
         self.database_filename = "casting_test.db"
         self.project_dir = os.path.dirname(os.path.abspath(__file__))
-        self.database_path = "sqlite:///{}".format(os.path.join(self.project_dir, self.database_filename))
+        #self.database_path = "sqlite:///{}".format(os.path.join(self.project_dir, self.database_filename))
 
+        
+        # Postgres Config
+        self.database_name = "casting_test"
+        self.user = "cog"
+        self.passwd = "1234"
+        self.database_path = "postgres://{}:{}@{}/{}".format(self.user, self.passwd,'localhost:5432', self.database_name)
+        
         self.headers_asst = {'Content-Type': 'application/json',
                                   'Authorization': asst_token}
         self.headers_dir = {'Content-Type': 'application/json',
@@ -40,6 +48,7 @@ class CastingTestCase(unittest.TestCase):
         with self.app.app_context():
             self.db = SQLAlchemy()
             self.db.init_app(self.app)
+            #self.db.create_all()
 
 
         self.add_actor = {"name": "Kiki Nkunku",
@@ -66,7 +75,7 @@ class CastingTestCase(unittest.TestCase):
         pass
 
 
-    # TEST 1: TEST ACCESS TO ADD ACTORS WITHOUT AUTH
+    # # TEST 1: TEST ACCESS TO ADD ACTORS WITHOUT AUTH
     def test_01_add_actor_no_auth(self):
         response = self.client().post('/actors', json=self.add_actor)
         data = response.json
@@ -74,7 +83,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Authorization header is expected')
 
-    # TEST 2: TEST ACCESS TO ADD ACTORS WITH insufficient PERMISSION (AS CAST ASSISTANT)
+    # # TEST 2: TEST ACCESS TO ADD ACTORS WITH insufficient PERMISSION (AS CAST ASSISTANT)
     def test_02_add_actor_no_perm(self):
         response = self.client().post('/actors', json=self.add_actor, headers=self.headers_asst)
         data = response.json
@@ -82,7 +91,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Permission Not found')
 
-    # TEST 3: TEST ACCESS TO ADD ACTORS WITH SUFFICIENT PERMISSION (AS CAST DIRECTOR)
+    # # TEST 3: TEST ACCESS TO ADD ACTORS WITH SUFFICIENT PERMISSION (AS CAST DIRECTOR)
     def test_03_add_actor_with_perm(self):
         response = self.client().post('/actors', json=self.add_actor, headers=self.headers_dir)
         data = response.json
@@ -90,7 +99,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['new_actor'], 'Kiki Nkunku')
 
-    # TEST 4: TEST ACCESS TO VIEW ACTORS WITHOUT AUTH
+    # # TEST 4: TEST ACCESS TO VIEW ACTORS WITHOUT AUTH
     def test_04_view_actors_no_auth(self):
         response = self.client().get('/actors')
         data = json.loads(response.data)
@@ -98,7 +107,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Authorization header is expected')
 
-    # TEST 5: TEST ACCESS TO VIEW ACTORS WITH SUFFICIENT PERMISSION (AS CAST ASSISTANT)
+    # # TEST 5: TEST ACCESS TO VIEW ACTORS WITH SUFFICIENT PERMISSION (AS CAST ASSISTANT)
     def test_05_view_actors_with_perm(self):
         res = self.client().get('/actors', headers=self.headers_asst)
         data = json.loads(res.data)
@@ -106,7 +115,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data["success"], True)
         self.assertEqual(data['actors'][0]['__name'], 'Kiki Nkunku')
 
-    # TEST 6: TEST ACCESS TO ADD MOVIES WITH INSUFFICIENT PERMISSION (AS CAST DIRECTOR)
+    # # TEST 6: TEST ACCESS TO ADD MOVIES WITH INSUFFICIENT PERMISSION (AS CAST DIRECTOR)
     def test_06_add_movie_no_perm(self):
         response = self.client().post('/movies', json=self.add_movie , headers=self.headers_dir)
         data = response.json
@@ -114,7 +123,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Permission Not found')
 
-    # TEST 7: TEST ACCESS TO ADD MOVIES WITH SUFFICIENT PERMISSION (AS EXECUTIVE PRODUCER)
+    # # TEST 7: TEST ACCESS TO ADD MOVIES WITH SUFFICIENT PERMISSION (AS EXECUTIVE PRODUCER)
     def test_07_add_movie_with_perm(self):
         response = self.client().post('/movies', json=self.add_movie , headers=self.headers_exec)
         data = response.json
@@ -122,7 +131,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['new_movie'], 'Malukani Junbulukeni')
 
-    # TEST 8: TEST ACCESS TO VIEW MOVIES
+    # # TEST 8: TEST ACCESS TO VIEW MOVIES
     def test_08_view_movies(self):
       res = self.client().get('/movies', headers=self.headers_dir)
       data = json.loads(res.data)
@@ -130,7 +139,7 @@ class CastingTestCase(unittest.TestCase):
       self.assertEqual(data["success"], True)
       self.assertEqual(data['movies'][0]['__title'], 'Malukani Junbulukeni')
 
-    # TEST 9: TEST ACCESS TO LINK MOVIES TO ACTORS (AS EXECUTIVE PRODUCER)
+    # # TEST 9: TEST ACCESS TO LINK MOVIES TO ACTORS (AS EXECUTIVE PRODUCER)
     def test_09_actor_movie_link(self):
         response = self.client().post('/link', json=self.add_link, headers=self.headers_exec)
         data = response.json
@@ -139,7 +148,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['linked_actor'], 'Kiki Nkunku')
         self.assertEqual(data['linked_movie'], 'Malukani Junbulukeni')
 
-    # TEST 10: TEST ACCESS TO EDIT ACTOR (AS CAST DIRECTOR)
+    # # TEST 10: TEST ACCESS TO EDIT ACTOR (AS CAST DIRECTOR)
     def test_10_edit_actor(self):
         response = self.client().patch('/actors/1', json=self.edit_actor, headers=self.headers_dir)
         data = response.json
@@ -147,7 +156,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['updated_name'], 'PATCHED Kiki Nkunku')
 
-    # TEST 11: TEST ACCESS TO EDIT MOVIE (AS CAST DIRECTOR)
+    # # TEST 11: TEST ACCESS TO EDIT MOVIE (AS CAST DIRECTOR)
     def test_11_edit_movie(self):
         response = self.client().patch('/movies/1', json=self.edit_movie, headers=self.headers_dir)
         data = response.json
@@ -155,7 +164,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['updated_movie_title'], 'PATCHED Malukani Junbulukeni')
 
-    # TEST 12: TEST ACCESS TO DELETE ACTOR (AS CAST DIRECTOR) [WITH PERMISSION]
+    # # TEST 12: TEST ACCESS TO DELETE ACTOR (AS CAST DIRECTOR) [WITH PERMISSION]
     def test_12_delete_actor_with_perm(self):
         response = self.client().delete('/actors/1', headers=self.headers_dir)
         data = response.json
@@ -165,7 +174,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['deleted_actor'], 'PATCHED Kiki Nkunku')
         self.assertEqual(actor, None)
 
-    # TEST 13: TEST ACCESS TO DELETE MOVIE (AS CAST DIRECTOR) [NO PERMISSION]
+    # # TEST 13: TEST ACCESS TO DELETE MOVIE (AS CAST DIRECTOR) [NO PERMISSION]
     def test_13_delete_movie_no_perm(self):
         response = self.client().delete('/movies/1', headers=self.headers_dir)
         data = response.json
@@ -174,7 +183,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Permission Not found')
 
-    # TEST 14: TEST ACCESS TO DELETE MOVIE (AS EXECUTIVE PRODUCER) [with PERMISSION]
+    # # TEST 14: TEST ACCESS TO DELETE MOVIE (AS EXECUTIVE PRODUCER) [with PERMISSION]
     def test_13_delete_movie_no_perm(self):
       response = self.client().delete('/movies/1', headers=self.headers_exec)
       data = response.json

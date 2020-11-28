@@ -4,14 +4,18 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
+from flask_sqlalchemy import SQLAlchemy
 
 from models import  setup_db, db, Actor, Movie, Link #db_create_all_if_table_doesnt_exist,
 from auth import AuthError, requires_auth
 
 
+
 def create_app(test_config=None):
   app = Flask(__name__)
   setup_db(app)
+
+  db
 
   '''
   @TODO uncomment the following line to initialize the datbase

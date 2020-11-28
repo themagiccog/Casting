@@ -26,14 +26,16 @@ This will install all of the required packages we selected within the `requireme
 
 - [Flask](http://flask.pocoo.org/)  is a lightweight backend microservices framework. Flask is required to handle requests and responses.
 
+- [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) Flask-Migrate is an extension that handles SQLAlchemy database migrations for Flask applications using Alembic. The database operations are made available through the Flask command-line interface or through the Flask-Script extension.
+
 - [SQLAlchemy](https://www.sqlalchemy.org/) and [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/) are libraries to handle the lightweight sqlite database. Since we want you to focus on auth, we handle the heavy lift for you in `./src/database/models.py`. We recommend skimming this code first so you know how to interface with the Drink model.
 
 - [jose](https://python-jose.readthedocs.io/en/latest/) JavaScript Object Signing and Encryption for JWTs. Useful for encoding, decoding, and verifying JWTS.
 
 ## Running the server
 
-From within the project  directory first ensure you are working using your created virtual environment.
-Navigate to `backend` after activating virtual environment
+From within the project directory (casting), first ensure you are working using your created virtual environment.
+Navigate to `casting` after activating virtual environment
 
 Each time you open a new terminal session, run:
 
@@ -48,6 +50,22 @@ flask run --reload
 ```
 
 The `--reload` flag will detect file changes and restart the server automatically.
+
+Since we will be using Postgres as the Database, we will need to create a database calling `casting` using the following command:
+```bash
+createdb casting
+```
+
+Since we will be using a Flask-Migrate tool, we will need to set up migrations as follows:
+```bash
+flask db init
+
+flask db migrate
+
+flask db upgrade
+```
+
+Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your `model.py`.
 
 ## Tasks
 
@@ -180,12 +198,16 @@ The `--reload` flag will detect file changes and restart the server automaticall
 
 ## Testing
 
-To run the tests, I used unittest module. The test code is as shown in this file `test_api.py`. A new sqlite database will be created when test is scheduled. See command below:
+To run the tests, I used unittest module. The test code is as shown in this file `test_api.py`. A postgres database was created with database name as `casting_test`. See command below:
 
 ```
+dropdb casting_test
+createdb casting_test
+
 python3 test_api.py -v
 
 ```
+NOTE: Be sure to delete/drop the tables in database between tests.
 
 The following tests were conducted:
 TEST 1: TEST ACCESS TO ADD ACTORS WITHOUT AUTH
