@@ -18,8 +18,8 @@ project_dir = os.path.dirname(os.path.abspath(__file__))
 database_name = "casting"
 user = "cog"
 passwd = "1234"
-database_path = "postgres://{}:{}@{}/{}".format(user, passwd,'localhost:5432', database_name)
-
+#database_path = "postgres://{}:{}@{}/{}".format(user, passwd,'localhost:5432', database_name)
+database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
