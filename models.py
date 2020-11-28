@@ -19,8 +19,8 @@ database_name = "casting"
 user = "cog"
 passwd = "1234"
 #database_path = "postgres://{}:{}@{}/{}".format(user, passwd,'localhost:5432', database_name)
-#database_path = os.environ['DATABASE_URL']
-database_path = 'postgres://sdvnivydulpsms:5d8861784026360e455814f6d0cbd0ac02c3f91e881d14aea0ee047738493ced@ec2-52-5-176-53.compute-1.amazonaws.com:5432/d8i942aps7g7cl'
+database_path = os.environ('DATABASE_URL')
+#database_path = 'postgres://sdvnivydulpsms:5d8861784026360e455814f6d0cbd0ac02c3f91e881d14aea0ee047738493ced@ec2-52-5-176-53.compute-1.amazonaws.com:5432/d8i942aps7g7cl'
 
 db = SQLAlchemy()
 
