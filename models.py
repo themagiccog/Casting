@@ -16,7 +16,7 @@ db = SQLAlchemy()
 def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
+    db.app = app   # db = SQLAlchemy(app)
     db.init_app(app)
     db.create_all()
 
@@ -31,6 +31,10 @@ class Actor(db.Model):
 
     movies = relationship('Movie', secondary = 'link')
 
+    # Useful debuging statements when we print this object
+    def __repr__(self):
+      return f'<Actor {self.id} {self.name} {self.age} {self.gender}>'
+
 
 class Movie(db.Model):
     __tablename__ = 'movie'
@@ -41,10 +45,18 @@ class Movie(db.Model):
 
     actors = relationship('Actor', secondary = 'link')
 
+    # Useful debuging statements when we print this object
+    def __repr__(self):
+      return f'<Movie {self.id} {self.title} {self.releasedate}>'
+
 
 class Link(db.Model):
     __tablename__ = 'link'
 
     actor_id = Column(Integer,ForeignKey('actor.id'),primary_key = True)
     movie_id = Column(Integer,ForeignKey('movie.id'),primary_key = True)
+
+    # Useful debuging statements when we print this object
+    def __repr__(self):
+      return f'<Link {self.actor_id} {self.movie_id}>'
 
