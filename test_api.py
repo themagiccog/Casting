@@ -12,6 +12,10 @@ exec_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRpOGExamZlMVY
 dir_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRpOGExamZlMVY3VWgwQVBTZmN6OCJ9.eyJpc3MiOiJodHRwczovL2Rldm9wc2tpbmcudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmYjVhMzRlYTJkN2YzMDA2ZTZkYTEwMiIsImF1ZCI6Im1vdmlldGVzdCIsImlhdCI6MTYwNjU5MTExMCwiZXhwIjoxNjA2Njc3NTEwLCJhenAiOiJmOHp2NkdRZHllMXYxWTBNeWNvZG9iMG05VDJKWUdHbiIsInNjb3BlIjoiIiwicGVybWlzc2lvbnMiOlsiYWRkOmFjdG9yIiwiZGVsZXRlOmFjdG9yIiwiZWRpdDphY3RvciIsImVkaXQ6bW92aWUiLCJ2aWV3OmFjdG9ycyIsInZpZXc6bW92aWVzIl19.MoM3BL6OgiiuLIUbUlBxqZtTR6EGgvaqqUH2RPDNZuKHCFBCQo6pXkW56vGHNzjoZCWO8skEEDfq3cpnuayk4ULvfEOT9RNiF3MTWebe9zDoXLGkVtVZwCzZ-AxHwdQG53129TIs-rXYB1_8dja-jtu9yGRnZoiZv_6wOuQ3Uzr1iluMvMO4dyZDxLRFio0FIrb16ewYAc_aPYSPm5SsJypW5xJcxJK5bRv9TWHUcJ0USnLY0pKlBMhWpF2ZCKmZKxA9iOZu_mwt_F8_3FHbKPq60mqx8zw4Bv3jQenOQ-JtbMRP1uYc0NnEQvOApU8l_yNIraOSuJGVs0bRBJY7Ew'
 asst_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRpOGExamZlMVY3VWgwQVBTZmN6OCJ9.eyJpc3MiOiJodHRwczovL2Rldm9wc2tpbmcudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmYzFkM2Q4YzNjNmYwMDA3NTgxY2I2MCIsImF1ZCI6Im1vdmlldGVzdCIsImlhdCI6MTYwNjU5MTE4NiwiZXhwIjoxNjA2Njc3NTg2LCJhenAiOiJmOHp2NkdRZHllMXYxWTBNeWNvZG9iMG05VDJKWUdHbiIsInNjb3BlIjoiIiwicGVybWlzc2lvbnMiOlsidmlldzphY3RvcnMiLCJ2aWV3Om1vdmllcyJdfQ.GFAM_qBoeoIG83ZE5K2D0Tr4p19e3NoXwt_0omST78VPZx5wQ91MdSN1qMjvD_zxlZcbeYY-kvxoY9aV8UP8C6RQ7WMxW3FtepFRS7bNIw0tkc_d2Sba38cZzQ7E5bFhMgByZJvaimWuyGwev9FKjJu5Hpyuo1MJkOVbtIydtyzbJW4rspreuIXUFolIAWbpLOjVCi88QGdV153lPuI5OqFPRqlOfnp4F9ENNq-PPfd0EyHlrUVDgoDt6cT9GtS4CqJgKCxEH0J8c7aKeJY0u4qXZ2OFAtHYYgWbUtz0k6hE4kBWJ1W8R-u3qAggIPGGkL69Vw09UHZm6nwf7azuuA'
 
+# If you want to run below, please update the setup.sh script with your tokens and comment out the above assignments
+#exec_token = os.environ.get('EXEC_TOKEN')
+#dir_token = os.environ.get('DIR_TOKEN')
+#asst_token = os.environ.get('ASST_TOKEN')
 
 
 class CastingTestCase(unittest.TestCase):
@@ -32,7 +36,12 @@ class CastingTestCase(unittest.TestCase):
         self.database_name = "casting_test"
         self.user = "cog"
         self.passwd = "1234"
-        self.database_path = "postgres://{}:{}@{}/{}".format(self.user, self.passwd,'localhost:5432', self.database_name)
+        
+        is_prod = os.environ.get('IS_HEROKU', None)
+        if is_prod:
+          self.database_path = os.environ.get('TEST_DB_URL')
+        else:
+          self.database_path = "postgres://{}:{}@{}/{}".format(self.user, self.passwd,'localhost:5432', self.database_name)
         
         self.headers_asst = {'Content-Type': 'application/json',
                                   'Authorization': asst_token}
