@@ -4,7 +4,9 @@
 
 [Flask-SQLAlchemy](https://castingmovie.herokuapp.com/)
 
-https://castingmovie.herokuapp.com/
+The app is located: https://castingmovie.herokuapp.com/
+
+You need authorization to access the endpoints.
 
 ## Getting Started
 
