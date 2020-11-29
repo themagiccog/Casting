@@ -1,4 +1,4 @@
-# Coffee Shop Backend
+# Casting Backend
 
 ## Getting Started
 
@@ -52,11 +52,13 @@ flask run --reload
 The `--reload` flag will detect file changes and restart the server automatically.
 
 Since we will be using Postgres as the Database, we will need to create a database calling `casting` using the following command:
+
 ```bash
 createdb casting
 ```
 
 Since we will be using a Flask-Migrate tool, we will need to set up migrations as follows:
+
 ```bash
 flask db init
 
@@ -91,7 +93,7 @@ Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your
 6. Create new roles for:
     - Cast Assistant-
         Can do the following:
-        - `view:movies`, 
+        - `view:movies`,
         - `view:actors`
     - Manager-
         Can perform all from Cast Assitant and:
@@ -107,25 +109,28 @@ Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your
 
 ## API DOCUMENTATION
 
-### List Of Endpoints:
+### List Of Endpoints
 
 - GET '/actors'
 - POST '/actors'
-- PATCH '/actors/<id>'
-- DELETE '/actors/<id>'
+- PATCH '/actors/id'
+- DELETE '/actors/id'
 - GET '/movies'
 - POST '/movies'
-- PATCH '/movies/<id>'
-- DELETE '/movies/<id>'
+- PATCH '/movies/id'
+- DELETE '/movies/id'
 - POST '/link/'
 
 ### GET '/actors'
-```
+
+```bash
 - Handles GET requests Returns a list of actors and what movies they are linked to.
 
 ```
+
 ### POST '/actors
-```
+
+```bash
 - Uses POST request to add Actor and its properties to Database
 
 - Request Arguments: json body header in the following format:
@@ -137,16 +142,19 @@ Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your
 
 
 ```
-### PATCH '/actors/<id>'
-```
-- This endpoint will EDIT actors with the specified actor ID. 
+
+### PATCH '/actors/id'
+
+```bash
+- This endpoint will EDIT actors with the specified actor ID.
 
 - Request Arguments: Actor ID (int)
 
 ```
 
-### DELETE '/actors/<id>'
-```
+### DELETE '/actors/id'
+
+```bash
 - This endpoint will DELETE actors with the specified actor ID. This also deletes the link with the Movies associated with it where applicable.
 
 - Request Arguments: Actor ID (int)
@@ -154,12 +162,15 @@ Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your
 ```
 
 ### GET '/movies'
-```
+
+```bash
 - Handles GET requests Returns a list of movies and what actors they are linked to.
 
 ```
+
 ### POST '/movies
-```
+
+```bash
 - Uses POST request to add Movie and its properties to Database
 
 - Request Arguments: json body header in the following format:
@@ -169,23 +180,30 @@ Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your
 }
 
 ```
-### PATCH '/movies/<id>'
-```
-- This endpoint will EDIT movies with the specified movie ID. 
+
+### PATCH '/movies/id'
+
+```bash
+- This endpoint will EDIT movies with the specified movie ID.
 
 - Request Arguments: Movie ID (int)
 
 ```
 
-### DELETE '/movies/<id>'
-```
+### DELETE '/movies/id'
+
+```bash
 - This endpoint will DELETE movies with the specified movie ID. This also deletes the link with the Actors associated with it where applicable.
 
 - Request Arguments: Movie ID (int)
 
+
 ```
+
 ### POST '/link
-```
+
+```bash
+
 - Uses POST request to link an Actor with a Movie to create an association in the Database
 
 - Request Arguments: json body header in the following format:
@@ -193,20 +211,21 @@ Note: Ensure you use migrate = Migrate(app, db) in place of create_all() in your
     "movie_id": 1,
     "actor_id": 1
 }
-
 ```
 
 ## Testing
 
 To run the tests, I used unittest module. The test code is as shown in this file `test_api.py`. A postgres database was created with database name as `casting_test`. See command below:
 
-```
+```bash
+
 dropdb casting_test
 createdb casting_test
 
 python3 test_api.py -v
 
 ```
+
 NOTE: Be sure to delete/drop the tables in database between tests.
 
 The following tests were conducted:
@@ -225,9 +244,10 @@ TEST 12: TEST ACCESS TO DELETE ACTOR (AS CAST DIRECTOR) [WITH PERMISSION]
 TEST 13: TEST ACCESS TO DELETE MOVIE (AS CAST DIRECTOR) [NO PERMISSION]
 TEST 14: TEST ACCESS TO DELETE MOVIE (AS EXECUTIVE PRODUCER) [with PERMISSION]
 
+### Results
 
-#### Results
 See below for the results of the tests:
+
 ``` bash
 $ python3 test_api.py -v
 test_01_add_actor_no_auth (__main__.CastingTestCase) ... ok
@@ -247,3 +267,81 @@ test_13_delete_movie_no_perm (__main__.CastingTestCase) ... ok
 ----------------------------------------------------------------------
 Ran 13 tests in 2.143s
 ```
+
+## Heroku
+
+### SETUP
+
+To set up Heroku CLI, go to the website and create an account.
+Then install Heroku CLI using:
+
+```bash
+curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+```
+
+Confirm installation by checking version:
+
+```bash
+heroku --version
+```
+
+Then on your terminal, enter the following command to login (follow instructions):
+
+```bash
+heroku login
+```
+
+The first thing you want to do is create a new folder and move your project to it.
+Note: DO NOT CHANGE ANY FILE IN THE FOLDER UNTIL YOU PUSH. MAKE SURE YOU HAVE CREATED YOUR REQ FILE BEFORE PROCEEDING (USING PIP FREEZE)
+Use Heroku CLI to add your project to git by:
+
+```bash
+git init
+git add .
+git commit -m "My first commit"
+```
+
+Create an Heroku app using:
+
+```bash
+heroku create <app name>
+```
+
+This automatically ties the app to the heroku repo.
+Confirm by entering the following command:
+
+```bash
+git remote -v
+```
+
+You should get a response like:
+
+```bash
+heroku  https://git.heroku.com/thawing-inlet-61413.git (fetch)
+heroku  https://git.heroku.com/thawing-inlet-61413.git (push)
+```
+
+Next, we deploy the code by enting the following:
+
+```bash
+git push heroku master
+```
+
+If you updated your requirement file, your deploy will almost always fail. When it does, note the module that caused the failure, go to you requirements file and delete it, then run the following command.
+
+```bash
+git commit -m "Changed Req" -a
+git push heroku master
+```
+
+Keep doing this until you have cleared all the errors.
+Your app should be deployed and ready for use.
+
+A good thing to do is have another terminal that has heroku logs running.
+Open another terminal and enter the following:
+
+```bash
+heroku logs --tail
+```
+
+This terminal will show you what the logs are. it helps to immediately see if your app is running without going to Web browser.
